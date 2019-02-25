@@ -1,7 +1,5 @@
-# parsed_data/admin.py
 from django.contrib import admin
-# models에서 Post를 import 해옵니다.
-from .models import Post
+from .models import Post, Comment
 
-# 아래의 코드를 입력하면 Post admin 페이지에서 관리할 수 있습니다.
 admin.site.register(Post)
+admin.site.register(Comment)
