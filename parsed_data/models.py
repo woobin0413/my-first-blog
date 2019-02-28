@@ -1,14 +1,3 @@
-# parsed_data/models.py
-# from django.db import models
-
-
-# class BlogData(models.Model):
-#     title = models.CharField(max_length=200)
-#     link = models.URLField()
-#
-#     def __str__(self):
-#         return self.title
-
 from django.db import models
 from django.utils import timezone
 
@@ -16,11 +5,11 @@ from django.utils import timezone
 class Post(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
+    
+    photo = models.ImageField(blank=True, upload_to="image/%Y/%m/%d")
     text = models.TextField()
-    created_date = models.DateTimeField(
-            default=timezone.now)
-    published_date = models.DateTimeField(
-            blank=True, null=True)
+    created_date = models.DateTimeField(default=timezone.now)
+    published_date = models.DateTimeField(blank=True, null=True)
 
     def publish(self):
         self.published_date = timezone.now()
@@ -28,10 +17,6 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-
-    def publish(self):
-        self.published_date = timezone.now()
-        self.save()
 
 class Comment(models.Model):
     post = models.ForeignKey('parsed_data.Post', on_delete=models.CASCADE, related_name='comments')

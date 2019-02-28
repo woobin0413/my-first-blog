@@ -3,6 +3,10 @@ from .models import Post, Comment
 from django.utils import timezone
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+
+
 
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')

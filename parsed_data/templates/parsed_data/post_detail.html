@@ -9,28 +9,36 @@
         {% else %}
             <a class="btn btn-default" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
         {% endif %}
-
-
-
-
         {% if user.is_authenticated %}
-             <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}"><span class="glyphicon glyphicon-pencil"></span></a>
-        <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+
+        <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            <span><strong>Edit</strong></span>
+        </a>
+        <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}">
+            <span class="glyphicon glyphicon-remove"></span>
+            <span><strong>Remove</strong></span>
+        </a>
+
         {% endif %}
         <h1>{{ post.title }}</h1>
+        {% if post.photo %}
+              <img class="center" src="{{ post.photo.url }}" alt="Responsive image" height="400" >
+        {% endif %}
         <p>{{ post.text|linebreaksbr }}</p>
     </div>
+
     <hr>
-    <a class="btn btn-default" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
+    <a class="btn btn-primary" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
     {% for comment in post.comments.all %}
     {% if user.is_authenticated or comment.approved_comment %}
     <div class="comment">
         <div class="date">
-            {{ comment.created_date }}
             {% if not comment.approved_comment %}
                 <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
                 <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}"><span class="glyphicon glyphicon-ok"></span></a>
             {% endif %}
+            {{ comment.created_date }}
         </div>
         <strong>{{ comment.author }}</strong>
         <p>{{ comment.text|linebreaks }}</p>
