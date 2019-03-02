@@ -12,12 +12,21 @@
             {% endif %}
             </a></h1>
 
+            <a class="btn btn-default" href="{% url 'post_cart' pk=post.pk %}">
+                <span class="glyphicon glyphicon-shopping-cart"></span>
+                <span><strong>Add to cart</strong></span>
+            </a>
+
+
+
+
+
             <a href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.comments.count }}</a>
             <br><br>
             <p><span style="color: #828282">{{post.published_date }}</span></p>
 
 
-            
+
         </div>
     {% endfor %}
 

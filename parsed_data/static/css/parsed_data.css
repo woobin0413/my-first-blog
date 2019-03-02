@@ -57,7 +57,7 @@ body{
   font-size: 15px;
 }
 
-a.btn:hover {
+a.btn:hover, button {
      -webkit-transform: scale(1.1);
      -moz-transform: scale(1.1);
      -o-transform: scale(1.1);

@@ -1,63 +1,65 @@
 {% extends 'parsed_data/base.html' %}
 
 {% block content %}
-    <div class="post">
-        {% if post.published_date %}
-            <div class="date">
-                {{ post.published_date }}
-            </div>
-        {% else %}
-            <a class="btn btn-default" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
-        {% endif %}
-        {% if user.is_authenticated %}
+<div class="post">
+  {% if post.published_date %}
+  <div class="date">
+    {{ post.published_date }}
+  </div>
+  {% else %}
+  <a class="btn btn-default" href="{% url 'post_publish' pk=post.pk %}">Publish</a>
+  {% endif %}
+  {% if user.is_authenticated %}
 
-        <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}">
-            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-            <span><strong>Edit</strong></span>
-        </a>
-        <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}">
-            <span class="glyphicon glyphicon-remove"></span>
-            <span><strong>Remove</strong></span>
-        </a>
+  <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}">
+    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+    <span><strong>Edit</strong></span>
+  </a>
+  <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}">
+    <span class="glyphicon glyphicon-remove"></span>
+    <span><strong>Remove</strong></span>
+  </a>
 
-        {% endif %}
-        <h1>{{ post.title }}</h1>
-        {% if post.photo %}
-              <img class="center" src="{{ post.photo.url }}" alt="Responsive image" height="400" >
-        {% endif %}
-        <p>{{ post.text|linebreaksbr }}</p>
-    </div>
+  {% endif %}
+  <h1>{{ post.title }}</h1>
+  {% if post.photo %}
+  <img class="center" src="{{ post.photo.url }}" alt="Responsive image" height="400">
+  {% endif %}
+  <p>{{ post.text|linebreaksbr }}</p>
+</div>
 
-    <form method="post" action="{%url 'like_post' %}" >
-    {% csrf_token %}
-    {% if is_liked %}
-        <button type="submit" name="post_id" class="btn btn-danger" value="{{ post.id  }}">Disike</button>
-    {% else %}
-        <button type="submit" name="post_id" class="btn btn-primary" value="{{ post.id  }}">Like</button>
+{% if request.user.is_authenticated %}
+<form method="post" action="{%url 'like_post' %}">
+  {% csrf_token %}
+  {% if is_liked %}
+  <button type="submit" name="post_id" class="btn btn-danger" value="{{ post.id  }}">Disike</button>
+  {% else %}
+  <button type="submit" name="post_id" class="btn btn-primary" value="{{ post.id  }}">Like</button>
+  {% endif %}
+</form>
+{% endif %}
+<!-- <p id="count{{ post.id }}">count : {{ post.total_likes }}</p> -->
+{{post.total_likes}} like{{post.total_likes|pluralize}}
+
+
+<hr>
+<a class="btn btn-primary" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
+{% for comment in post.comments.all %}
+{% if user.is_authenticated or comment.approved_comment %}
+<div class="comment">
+  <div class="date">
+    {% if not comment.approved_comment %}
+    <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
+    <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}"><span class="glyphicon glyphicon-ok"></span></a>
     {% endif %}
-    </form>
-    <!-- <p id="count{{ post.id }}">count : {{ post.total_likes }}</p> -->
-    {{post.total_likes}} likes
-
-
-    <hr>
-    <a class="btn btn-primary" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
-    {% for comment in post.comments.all %}
-    {% if user.is_authenticated or comment.approved_comment %}
-    <div class="comment">
-        <div class="date">
-            {% if not comment.approved_comment %}
-                <a class="btn btn-default" href="{% url 'comment_remove' pk=comment.pk %}"><span class="glyphicon glyphicon-remove"></span></a>
-                <a class="btn btn-default" href="{% url 'comment_approve' pk=comment.pk %}"><span class="glyphicon glyphicon-ok"></span></a>
-            {% endif %}
-            {{ comment.created_date }}
-        </div>
-        <strong>{{ comment.author }}</strong>
-        <p>{{ comment.text|linebreaks }}</p>
-    </div>
-    {% endif %}
+    {{ comment.created_date }}
+  </div>
+  <strong>{{ comment.author }}</strong>
+  <p>{{ comment.text|linebreaks }}</p>
+</div>
+{% endif %}
 {% empty %}
-    <p>No comments here yet :(</p>
+<p>No comments here yet :(</p>
 {% endfor %}
 
 

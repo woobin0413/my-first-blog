@@ -13,7 +13,7 @@ class Post(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
-
+    approved_item = models.BooleanField(default=False)
 
     def total_likes(self):
         return self.likes.count() #likes 컬럼의 값의 갯수를 센다
@@ -24,6 +24,14 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    def approve(self):
+        self.approved_item = True
+        self.save()
+
+    def approved_items(self):
+        return self.posts.filter(approved_item=True)
+
 
 class Comment(models.Model):
     post = models.ForeignKey('parsed_data.Post', on_delete=models.CASCADE, related_name='comments')
@@ -42,6 +50,3 @@ class Comment(models.Model):
     def approved_comments(self):
         return self.comments.filter(approved_comment=True)
 
-
-class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)

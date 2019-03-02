@@ -3,13 +3,7 @@ from .models import Post, Comment
 from django.utils import timezone
 from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-from django.core.files.storage import FileSystemStorage
-from django.contrib.auth.models import User
-from django.views.decorators.http import require_POST
-from django.http import HttpResponse, HttpResponseRedirect
-
-
+    
 def post_list(request):
     posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
     return render(request, 'parsed_data/post_list.html',{'posts': posts})
@@ -59,6 +53,7 @@ def post_draft_list(request):
     posts = Post.objects.filter(published_date__isnull=True).order_by('created_date')
     return render(request, 'parsed_data/post_draft_list.html', {'posts': posts})
 
+
 @login_required
 def post_publish(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -85,6 +80,15 @@ def add_comment_to_post(request, pk):
         form = CommentForm()
     return render(request, 'parsed_data/add_comment_to_post.html', {'form': form})
 
+
+def post_cart(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.approve()
+    posts = Post.objects.filter(approved_item=True)
+    return render(request, 'parsed_data/post_cart.html', {'posts': posts})
+
+
+
 @login_required
 def comment_approve(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
@@ -104,8 +108,6 @@ def like_post(request):
         post.likes.remove(request.user)
         is_liked = False
     else:
-
         post.likes.add(request.user)
         is_liked = True
-    print(is_liked)
     return redirect('post_detail', pk= post.pk)
