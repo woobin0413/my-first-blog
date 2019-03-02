@@ -5,7 +5,9 @@ from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-
+from django.contrib.auth.models import User
+from django.views.decorators.http import require_POST
+from django.http import HttpResponse, HttpResponseRedirect
 
 
 def post_list(request):
@@ -14,16 +16,24 @@ def post_list(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'parsed_data/post_detail.html', {'post': post})
+    is_liked = False
+    if post.likes.filter(id=request.user.id).exists():
+        is_liked = True
+    context = {
+        'post':post,
+        'is_liked': is_liked,
+        'total_likes' : post.total_likes(),
+    }
+
+    return render(request, 'parsed_data/post_detail.html', context)
 
 @login_required
 def post_new(request):
     if request.method == "POST":
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
-
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -34,11 +44,10 @@ def post_new(request):
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
-        form = PostForm(request.POST, instance=post)
+        form = PostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
-
             post.save()
             return redirect('post_detail', pk=post.pk)
     else:
@@ -61,6 +70,7 @@ def post_remove(request, pk):
     post = get_object_or_404(Post, pk=pk)
     post.delete()
     return redirect('post_list')
+
 
 def add_comment_to_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -86,3 +96,16 @@ def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     comment.delete()
     return redirect('post_detail', pk=comment.post.pk)
+
+def like_post(request):
+    is_liked = False
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    if post.likes.filter(id=request.user.id).exists():
+        post.likes.remove(request.user)
+        is_liked = False
+    else:
+
+        post.likes.add(request.user)
+        is_liked = True
+    print(is_liked)
+    return redirect('post_detail', pk= post.pk)

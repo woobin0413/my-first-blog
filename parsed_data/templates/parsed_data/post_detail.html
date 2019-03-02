@@ -28,6 +28,18 @@
         <p>{{ post.text|linebreaksbr }}</p>
     </div>
 
+    <form method="post" action="{%url 'like_post' %}" >
+    {% csrf_token %}
+    {% if is_liked %}
+        <button type="submit" name="post_id" class="btn btn-danger" value="{{ post.id  }}">Disike</button>
+    {% else %}
+        <button type="submit" name="post_id" class="btn btn-primary" value="{{ post.id  }}">Like</button>
+    {% endif %}
+    </form>
+    <!-- <p id="count{{ post.id }}">count : {{ post.total_likes }}</p> -->
+    {{post.total_likes}} likes
+
+
     <hr>
     <a class="btn btn-primary" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
     {% for comment in post.comments.all %}
@@ -47,6 +59,9 @@
 {% empty %}
     <p>No comments here yet :(</p>
 {% endfor %}
+
+
+
 
 
 

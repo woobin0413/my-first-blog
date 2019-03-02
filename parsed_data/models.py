@@ -1,15 +1,22 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.conf import settings
+
 
 
 class Post(models.Model):
     author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
-    
     photo = models.ImageField(blank=True, upload_to="image/%Y/%m/%d")
     text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
+
+
+    def total_likes(self):
+        return self.likes.count() #likes 컬럼의 값의 갯수를 센다
 
     def publish(self):
         self.published_date = timezone.now()
@@ -34,3 +41,7 @@ class Comment(models.Model):
 
     def approved_comments(self):
         return self.comments.filter(approved_comment=True)
+
+
+class Like(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
