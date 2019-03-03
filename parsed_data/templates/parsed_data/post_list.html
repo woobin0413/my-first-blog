@@ -3,31 +3,34 @@
 {% block content %}
 
 
-    {% for post in posts %}
-        <div class="col-md-3 post">
-            <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}
-            {% if post.photo %}
+{% for post in posts %}
+<div class="col-md-4 post">
 
-            <img class="mx-auto d-block" src="{{ post.photo.url }}" width="100%" height="200" alt="">
-            {% endif %}
-            </a></h1>
+    <h1>
+        <a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}
+        {% if post.photo %}
 
-            <a class="btn btn-default" href="{% url 'post_cart' pk=post.pk %}">
-                <span class="glyphicon glyphicon-shopping-cart"></span>
-                <span><strong>Add to cart</strong></span>
-            </a>
+        <img class="mx-auto d-block" src="{{ post.photo.url }}" width="100%" height="200" alt="">
+        {% endif %}
+        </a>
+    </h1>
+
+    {% if post.approved_item %}
+        <p><span style="color:red">THIS ITEM IS ALREADY ADDED</span></p>
+    {% else %}
+        <a class="btn btn-default" href="{% url 'post_cart' pk=post.pk %}">
+            <span class="glyphicon glyphicon-shopping-cart"></span>
+            <span><strong>Add to cart</strong></span>
+        </a>
+
+    {% endif %}
+
+    <a href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.comments.count }}</a>
+
+    <p><span style="color: #828282">{{post.published_date }}</span></p>
 
 
-
-
-
-            <a href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.comments.count }}</a>
-            <br><br>
-            <p><span style="color: #828282">{{post.published_date }}</span></p>
-
-
-
-        </div>
-    {% endfor %}
+</div>
+{% endfor %}
 
 {% endblock content %}

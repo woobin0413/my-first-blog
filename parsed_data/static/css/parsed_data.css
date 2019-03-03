@@ -36,6 +36,7 @@ body{
 
   padding: 10px;
   border-style: groove;
+  height: 53%;
 
 }
 .center {
@@ -70,3 +71,4 @@ a.btn:hover, button {
      -moz-transition-duration: 0.5s;
      -o-transition-duration: 0.5s;
  }
+
